@@ -2,22 +2,21 @@
 
 ## 세션 ID 찾기
 
-1. 이 대화에서만 존재할 고유한 문자열을 하나 선택 (최근 메시지 내용 중 일부)
-2. 아래 패턴으로 현재 프로젝트의 대화 파일에서 grep하여 세션 파일을 찾기:
-   ```
-   grep -l "고유문자열" ~/.claude/projects/*//*.jsonl
-   ```
-3. 파일명에서 세션 ID 추출 (파일명이 곧 `<session-id>.jsonl`)
+아래 스크립트를 실행하여 현재 세션 ID를 찾기:
+
+```bash
+FILE=$(ls -t ~/.claude/projects/*/*.jsonl | while read f; do grep -q "fork-yolo" "$f" && echo "$f" && break; done)
+SESSION_ID=$(basename "$FILE" .jsonl)
+echo "$SESSION_ID"
+```
 
 ## 명령어 생성
 
-찾은 세션 ID로 아래 형식의 명령어를 출력:
+찾은 세션 ID와 현재 작업 디렉토리(pwd)로 아래 형식의 명령어를 출력:
 
 ```
-cd <CWD> && claude --dangerously-skip-permissions -r <SESSION_ID> --fork-session
+cd <현재_작업_디렉토리> && claude --dangerously-skip-permissions -r <SESSION_ID> --fork-session
 ```
-
-- CWD: `$ARGUMENTS`가 있으면 그 경로, 없으면 현재 작업 디렉토리 사용
 
 ## 출력
 
